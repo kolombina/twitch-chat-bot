@@ -5,14 +5,18 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.kolombina.twitchchatbot.Configuration;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TwitchClientImpl {
 
     @Autowired
-    static
     Configuration configuration;
-    public static void configureBot() {
+
+    @PostConstruct
+    public void init() {
         // chat credential
         //note: if you use https://twitchtokengenerator.com/ (and their client id), your token does not expire
         OAuth2Credential credential = new OAuth2Credential("twitch", configuration.getAccessToken());

@@ -10,14 +10,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class TwitchChatBotApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TwitchChatBotApplication.class, args);
-		TwitchClientImpl.configureBot();
+//		TwitchClientImpl.configureBot();
 	}
 
 	//todo
 	// сделать файл-конфигурацию
-	// проект залить в гит
 	// по классам по логике все разнести нормально
 	// нормальный таймер сделать
 	// научиться получать список юзеров онлайн на канале
+	// switch-case заменить на что-то более адекватное - по ивент листенеру на каждую команду?
 
 }
