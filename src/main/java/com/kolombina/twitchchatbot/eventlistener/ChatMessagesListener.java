@@ -1,19 +1,18 @@
-package com.kolombina.twitchchatbot.test;
+package com.kolombina.twitchchatbot.eventlistener;
 
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 
-import java.time.Duration;
 import java.time.ZonedDateTime;
 
-public class WriteChannelChatToConsole {
+public class ChatMessagesListener {
     /**
      * Register events of this class with the EventManager/EventHandler
      *
      * @param eventHandler SimpleEventHandler
      */
-    public WriteChannelChatToConsole(SimpleEventHandler eventHandler, TwitchClient twitchClient) {
+    public ChatMessagesListener(SimpleEventHandler eventHandler, TwitchClient twitchClient) {
         eventHandler.onEvent(ChannelMessageEvent.class, event -> onChannelMessage(event, twitchClient));
     }
 
