@@ -3,26 +3,34 @@ package com.kolombina.twitchchatbot.eventlistener;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.kolombina.twitchchatbot.utils.Timer;
 
-import java.time.ZonedDateTime;
+import java.time.Duration;
 
 public class ChatMessagesListener {
+    private String kolombina = "───────────────────────██─ █──█─███────█──█─████─█──█ █──█─█──────█──█─█──█─█──█ ████─███────████─█──█─█─██ █──█─█──────█──█─█──█─██─█ █──█─███────█──█─████─█──█";
+
+    private String ruckhunter = "⣿⣿⣿⣿⠏⢄⢖⢵⢝⡞⡮⡳⣍⠊⠥⠥⢑⣕⢎⢔⡈⡙⣿⣿⣿⣿⣿⣿ ⣿⣿⡟⢡⢪⡳⡝⢱⡫⣞⢝⡝⣎⢯⡳⡥⡠⡘⣝⢵⡱⡠⠘⣿⣿⣿⣿ ⣿⣿⢃⢕⢗⡍⢼⠵⡝⡎⠇⢙⣈⣊⠪⠳⣅⢗⡵⡳⣝⡜⡔⠘⣿⣿⣿⣿ ⣿⣿⠐⢭⡳⡅⡬⡯⡺⡨⡈⢿⣿⣿⣿⣦⠨⡳⣝⣝⢮⡊⡜⡀⣿⣿⣿⣿ ⣿⣿⣧⠑⣝⢮⡳⣝⢽⣸⢰⠠⠙⠟⡋⡡⣸⣚⠮⢊⣓⠁⡎⡂⣸⣿⣿⣿ ⣿⣿⣿⣧⡘⡜⡮⣳⢳⢥⠱⣝⢼⢤⢌⠚⢮⣢⡲⡳⡅⡜⡌⢰⣿⣿⣿⣿ ⣿⣿⣿⠟⢃⠈⡊⢗⡽⣕⢇⡐⢌⡊⣏⢯⡢⣔⠙⢝⠜⢈⣠⣿⣿⣿⣿⣿ ⣿⡿⢁⢎⢮⢝⣆⡂⡙⢼⢕⢯⡲⣜⢵⡫⣞⢵⡹⡠⢐⠻⣿⣿⣿⣿⣿⣿ ⡿⢁⢧⣫⡳⣝⢮⡺⣢⣂⠉⠳⡹⣪⡳⣝⢮⡳⢕⣇ ⣿⣿⣿ ⠃⠘⢮⢺⢜⡮⡳⡹⢐⣈⣬⣴⣌⡊⠞⡎⣗ВИЖУ ЛИШНЕГО ⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿⣷⣌ МОДЕРА ⠄⠁⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿ @ruckhunter ⣿";
+    private String kurwa = "PeepoEvil Как-то днём бобёр Борис PeepoFeelsBobrMan под Еленой ветку сгрыз SquirrelJamDanceAnimal\u200B Воет белочка от боли: \"Kurwa Bober! Ja pierdole!\" WidePeepoHyperSpin";
+
+    private Timer kolombinaTimer;
+    private Timer ruckTimer;
+    private Timer kurwaTimer;
+
+    private String channelName;
+
     /**
      * Register events of this class with the EventManager/EventHandler
      *
      * @param eventHandler SimpleEventHandler
      */
-    public ChatMessagesListener(SimpleEventHandler eventHandler, TwitchClient twitchClient) {
+    public ChatMessagesListener(SimpleEventHandler eventHandler, TwitchClient twitchClient, String channelName) {
         eventHandler.onEvent(ChannelMessageEvent.class, event -> onChannelMessage(event, twitchClient));
+        this.channelName = channelName;
+        this.kolombinaTimer = Timer.expired(Duration.ofSeconds(30));
+        this.ruckTimer = Timer.expired(Duration.ofSeconds(30));
+        this.kurwaTimer = Timer.expired(Duration.ofSeconds(30));
     }
-
-    private String kolombina = "───────────────────────██─ █──█─███────█──█─████─█──█ █──█─█──────█──█─█──█─█──█ ████─███────████─█──█─█─██ █──█─█──────█──█─█──█─██─█ █──█─███────█──█─████─█──█";
-    private String ruckhunter = "⣿⣿⣿⣿⠏⢄⢖⢵⢝⡞⡮⡳⣍⠊⠥⠥⢑⣕⢎⢔⡈⡙⣿⣿⣿⣿⣿⣿ ⣿⣿⡟⢡⢪⡳⡝⢱⡫⣞⢝⡝⣎⢯⡳⡥⡠⡘⣝⢵⡱⡠⠘⣿⣿⣿⣿ ⣿⣿⢃⢕⢗⡍⢼⠵⡝⡎⠇⢙⣈⣊⠪⠳⣅⢗⡵⡳⣝⡜⡔⠘⣿⣿⣿⣿ ⣿⣿⠐⢭⡳⡅⡬⡯⡺⡨⡈⢿⣿⣿⣿⣦⠨⡳⣝⣝⢮⡊⡜⡀⣿⣿⣿⣿ ⣿⣿⣧⠑⣝⢮⡳⣝⢽⣸⢰⠠⠙⠟⡋⡡⣸⣚⠮⢊⣓⠁⡎⡂⣸⣿⣿⣿ ⣿⣿⣿⣧⡘⡜⡮⣳⢳⢥⠱⣝⢼⢤⢌⠚⢮⣢⡲⡳⡅⡜⡌⢰⣿⣿⣿⣿ ⣿⣿⣿⠟⢃⠈⡊⢗⡽⣕⢇⡐⢌⡊⣏⢯⡢⣔⠙⢝⠜⢈⣠⣿⣿⣿⣿⣿ ⣿⡿⢁⢎⢮⢝⣆⡂⡙⢼⢕⢯⡲⣜⢵⡫⣞⢵⡹⡠⢐⠻⣿⣿⣿⣿⣿⣿ ⡿⢁⢧⣫⡳⣝⢮⡺⣢⣂⠉⠳⡹⣪⡳⣝⢮⡳⢕⣇ ⣿⣿⣿ ⠃⠘⢮⢺⢜⡮⡳⡹⢐⣈⣬⣴⣌⡊⠞⡎⣗ВИЖУ ЛИШНЕГО ⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿⣷⣌ МОДЕРА ⠄⠁⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿ @ruckhunter ⣿";
-
-    private String kurwa = "PeepoEvil Как-то днём бобёр Борис PeepoFeelsBobrMan под Еленой ветку сгрыз SquirrelJamDanceAnimal\u200B Воет белочка от боли: \"Kurwa Bober! Ja pierdole!\" WidePeepoHyperSpin";
-    private ZonedDateTime timeoutKolombina = ZonedDateTime.now();
-    private ZonedDateTime timeoutRuck = ZonedDateTime.now();
-    private ZonedDateTime timeoutKurwa = ZonedDateTime.now();
 
     /**
      * Subscribe to the ChannelMessage Event and write the output to the console
@@ -31,22 +39,22 @@ public class ChatMessagesListener {
         //todo что-то нормальное вместо switch/case - команд дальше будет больше
         switch (event.getMessage()) {
             case "!коломбина" -> {
-//                if (Duration.between(timeoutKolombina, ZonedDateTime.now()).getSeconds() >= 30) {
-                    twitchClient.getChat().sendMessage("nosferatu_old_one", kolombina);
-                    timeoutKolombina = ZonedDateTime.now();
-//                }
+                if (kolombinaTimer.isExpired()) {
+                    twitchClient.getChat().sendMessage(channelName, kolombina);
+                    kolombinaTimer.restart();
+                }
             }
             case "!рак" -> {
-//                if (Duration.between(timeoutRuck, ZonedDateTime.now()).getSeconds() >= 30) {
-                    twitchClient.getChat().sendMessage("nosferatu_old_one", ruckhunter);
-                    timeoutRuck = ZonedDateTime.now();
-//                }
+                if (ruckTimer.isExpired()) {
+                    twitchClient.getChat().sendMessage(channelName, ruckhunter);
+                    ruckTimer.restart();
+                }
             }
             case "!bobr" -> {
-//                if (Duration.between(timeoutKurwa, ZonedDateTime.now()).getSeconds() >= 30) {
-                    twitchClient.getChat().sendMessage("nosferatu_old_one", kurwa);
-                    timeoutKurwa = ZonedDateTime.now();
-//                }
+                if (kurwaTimer.isExpired()) {
+                    twitchClient.getChat().sendMessage(channelName, kurwa);
+                    kurwaTimer.restart();
+                }
             }
             default -> {
             }

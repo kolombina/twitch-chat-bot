@@ -38,7 +38,7 @@ public class TwitchClient {
         //получаем eventHandler
         SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
         //создаем листенер ивента
-        ChatMessagesListener chatMessagesListener = new ChatMessagesListener(eventHandler, twitchClient);
+        ChatMessagesListener chatMessagesListener = new ChatMessagesListener(eventHandler, twitchClient, configuration.getChannelName());
         //определяем, на каком канале работает бот
         twitchClient.getChat().joinChannel(configuration.getChannelName());
         twitchClient.getClientHelper().enableStreamEventListener(configuration.getChannelName());
