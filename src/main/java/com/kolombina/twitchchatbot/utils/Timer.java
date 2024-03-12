@@ -1,5 +1,7 @@
 package com.kolombina.twitchchatbot.utils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.time.Duration;
 
 public class Timer {
@@ -8,37 +10,20 @@ public class Timer {
 
     private long startTime;
 
-    Timer(Duration timeout, boolean initiallyExpired) {
+    private Timer(Duration timeout, boolean initiallyExpired) {
         this.timeout = timeout.toNanos();
         this.initiallyExpired = initiallyExpired;
         this.startTime = getCurrentTime();
     }
 
-    /**
-     * Новый таймер с заданной длительностью
-     */
-    public static Timer of(Duration timeout) {
-        return new Timer(timeout, false);
+    @JsonCreator
+    public Timer(long timeout) {
+        new Timer(Duration.ofSeconds(timeout), true);
     }
 
-    /**
-     * Новый истекший таймер с заданной длительностью
-     */
-    public static Timer expired(Duration timeout) {
-        return new Timer(timeout, true);
-    }
-
-
-    public Timer restart(Duration timeout) {
-        this.timeout = timeout.toNanos();
-        startTime = getCurrentTime();
-        return restart();
-    }
-
-    public Timer restart() {
+    public void restart() {
         initiallyExpired = false;
         startTime = getCurrentTime();
-        return this;
     }
 
     public boolean isExpired() {

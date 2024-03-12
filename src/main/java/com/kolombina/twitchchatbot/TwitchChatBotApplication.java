@@ -14,9 +14,8 @@ public class TwitchChatBotApplication {
 
     //todo
     // продумать структуру проекта
-    // switch-case заменить на что-то более адекватное - по ивент листенеру на каждую команду?
+    // фронт, на котором можно будет добавлять/редактировать команды
     // ChatMessagesListener chatMessagesListener = new ChatMessagesListener(eventHandler, twitchClient); - сделать красиво, а не просто создать объект без ничего?
     // научиться получать список юзеров онлайн на канале
-    // добавить логгер хотя бы для "бот стартовал"
 
 }

@@ -1,23 +1,19 @@
 package com.kolombina.twitchchatbot.eventlistener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.kolombina.twitchchatbot.commands.SimpleWriteCommand;
-import com.kolombina.twitchchatbot.utils.Timer;
 
-import java.time.Duration;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChatMessagesListener {
-
-    private String kolombina = "───────────────────────██─ █──█─███────█──█─████─█──█ █──█─█──────█──█─█──█─█──█ ████─███────████─█──█─█─██ █──█─█──────█──█─█──█─██─█ █──█─███────█──█─████─█──█";
-
-    private String ruckhunter = "⣿⣿⣿⣿⠏⢄⢖⢵⢝⡞⡮⡳⣍⠊⠥⠥⢑⣕⢎⢔⡈⡙⣿⣿⣿⣿⣿⣿ ⣿⣿⡟⢡⢪⡳⡝⢱⡫⣞⢝⡝⣎⢯⡳⡥⡠⡘⣝⢵⡱⡠⠘⣿⣿⣿⣿ ⣿⣿⢃⢕⢗⡍⢼⠵⡝⡎⠇⢙⣈⣊⠪⠳⣅⢗⡵⡳⣝⡜⡔⠘⣿⣿⣿⣿ ⣿⣿⠐⢭⡳⡅⡬⡯⡺⡨⡈⢿⣿⣿⣿⣦⠨⡳⣝⣝⢮⡊⡜⡀⣿⣿⣿⣿ ⣿⣿⣧⠑⣝⢮⡳⣝⢽⣸⢰⠠⠙⠟⡋⡡⣸⣚⠮⢊⣓⠁⡎⡂⣸⣿⣿⣿ ⣿⣿⣿⣧⡘⡜⡮⣳⢳⢥⠱⣝⢼⢤⢌⠚⢮⣢⡲⡳⡅⡜⡌⢰⣿⣿⣿⣿ ⣿⣿⣿⠟⢃⠈⡊⢗⡽⣕⢇⡐⢌⡊⣏⢯⡢⣔⠙⢝⠜⢈⣠⣿⣿⣿⣿⣿ ⣿⡿⢁⢎⢮⢝⣆⡂⡙⢼⢕⢯⡲⣜⢵⡫⣞⢵⡹⡠⢐⠻⣿⣿⣿⣿⣿⣿ ⡿⢁⢧⣫⡳⣝⢮⡺⣢⣂⠉⠳⡹⣪⡳⣝⢮⡳⢕⣇ ⣿⣿⣿ ⠃⠘⢮⢺⢜⡮⡳⡹⢐⣈⣬⣴⣌⡊⠞⡎⣗ВИЖУ ЛИШНЕГО ⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿⣷⣌ МОДЕРА ⠄⠁⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿ @ruckhunter ⣿";
-    private String kurwa = "PeepoEvil Как-то днём бобёр Борис PeepoFeelsBobrMan под Еленой ветку сгрыз SquirrelJamDanceAnimal\u200B Воет белочка от боли: \"Kurwa Bober! Ja pierdole!\" WidePeepoHyperSpin";
 
     private final String channelName;
 
@@ -31,17 +27,11 @@ public class ChatMessagesListener {
     public ChatMessagesListener(SimpleEventHandler eventHandler, TwitchClient twitchClient, String channelName) {
         eventHandler.onEvent(ChannelMessageEvent.class, event -> onChannelMessage(event, twitchClient));
         this.channelName = channelName;
-
-        this.mapOfCommands = new HashMap<>();
-        mapOfCommands.put("!коломбина", new SimpleWriteCommand(kolombina, Timer.expired(Duration.ofSeconds(30))));
-        mapOfCommands.put("!рак", new SimpleWriteCommand(ruckhunter, Timer.expired(Duration.ofSeconds(30))));
-        mapOfCommands.put("!bobr", new SimpleWriteCommand(kurwa, Timer.expired(Duration.ofSeconds(30))));
-
-        writeCommands(mapOfCommands);
+        this.mapOfCommands = readCommands();
     }
 
     /**
-     * Subscribe to the ChannelMessage Event and write the output to the console
+     * Subscribe to the ChannelMessage Event
      */
     public void onChannelMessage(ChannelMessageEvent event, TwitchClient twitchClient) {
         if (mapOfCommands.containsKey(event.getMessage())) {
@@ -54,13 +44,19 @@ public class ChatMessagesListener {
         }
     }
 
-    private void writeCommands(Map<String, SimpleWriteCommand> mapOfCommands) {
+    private Map<String, SimpleWriteCommand> readCommands() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String mapOfCommandsString = objectMapper.writeValueAsString(mapOfCommands);
-            System.out.println(mapOfCommandsString);
+            TypeReference<HashMap<String, SimpleWriteCommand>> typeRef = new TypeReference<>() {
+            };
+            return objectMapper.readValue(new File("src/main/resources/commands.json"), typeRef);
         } catch (JsonProcessingException e) {
+            System.out.println("Error during reading commands.json");
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.out.println("Can't find file");
             throw new RuntimeException(e);
         }
+
     }
 }

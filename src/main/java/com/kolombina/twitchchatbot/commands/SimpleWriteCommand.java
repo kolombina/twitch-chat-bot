@@ -20,11 +20,10 @@ public class SimpleWriteCommand {
 
     @JsonCreator
     public SimpleWriteCommand(@JsonProperty("commandText") String commandText,
-                              @JsonProperty("timer") Timer timer) {
+                              @JsonProperty("timeout") long timeout) {
         this.commandText = commandText;
-        this.timer = timer;
+        this.timer = new Timer(timeout);
     }
-
 
     public String getCommandText() {
         return commandText;
