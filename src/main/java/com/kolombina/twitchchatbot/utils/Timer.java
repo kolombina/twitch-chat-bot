@@ -53,4 +53,12 @@ public class Timer {
         return System.nanoTime();
     }
 
+    @Override
+    public String toString() {
+        return "Timer{" +
+                "timeout=" + timeout +
+                ", initiallyExpired=" + initiallyExpired +
+                ", startTime=" + startTime +
+                '}';
+    }
 }

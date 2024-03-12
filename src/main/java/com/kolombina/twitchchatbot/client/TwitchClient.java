@@ -3,7 +3,6 @@ package com.kolombina.twitchchatbot.client;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClientBuilder;
-import com.kolombina.twitchchatbot.configuration.CommandsListConfiguration;
 import com.kolombina.twitchchatbot.configuration.CommonConfiguration;
 import com.kolombina.twitchchatbot.eventlistener.ChatMessagesListener;
 import jakarta.annotation.PostConstruct;
@@ -15,9 +14,6 @@ public class TwitchClient {
 
     @Autowired
     CommonConfiguration commonConfiguration;
-
-    @Autowired
-    CommandsListConfiguration commandsListConfiguration;
 
     @PostConstruct
     public void init() {
@@ -42,7 +38,7 @@ public class TwitchClient {
         //получаем eventHandler
         SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
         //создаем листенер ивента
-        ChatMessagesListener chatMessagesListener = new ChatMessagesListener(commandsListConfiguration, eventHandler, twitchClient, commonConfiguration.getChannelName());
+        ChatMessagesListener chatMessagesListener = new ChatMessagesListener(eventHandler, twitchClient, commonConfiguration.getChannelName());
         //определяем, на каком канале работает бот
         twitchClient.getChat().joinChannel(commonConfiguration.getChannelName());
         twitchClient.getClientHelper().enableStreamEventListener(commonConfiguration.getChannelName());

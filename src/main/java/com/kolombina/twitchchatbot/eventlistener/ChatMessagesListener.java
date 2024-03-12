@@ -1,10 +1,11 @@
 package com.kolombina.twitchchatbot.eventlistener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.kolombina.twitchchatbot.commands.SimpleWriteCommand;
-import com.kolombina.twitchchatbot.configuration.CommandsListConfiguration;
 import com.kolombina.twitchchatbot.utils.Timer;
 
 import java.time.Duration;
@@ -13,31 +14,30 @@ import java.util.Map;
 
 public class ChatMessagesListener {
 
-    private CommandsListConfiguration commandsListConfiguration;
     private String kolombina = "───────────────────────██─ █──█─███────█──█─████─█──█ █──█─█──────█──█─█──█─█──█ ████─███────████─█──█─█─██ █──█─█──────█──█─█──█─██─█ █──█─███────█──█─████─█──█";
 
     private String ruckhunter = "⣿⣿⣿⣿⠏⢄⢖⢵⢝⡞⡮⡳⣍⠊⠥⠥⢑⣕⢎⢔⡈⡙⣿⣿⣿⣿⣿⣿ ⣿⣿⡟⢡⢪⡳⡝⢱⡫⣞⢝⡝⣎⢯⡳⡥⡠⡘⣝⢵⡱⡠⠘⣿⣿⣿⣿ ⣿⣿⢃⢕⢗⡍⢼⠵⡝⡎⠇⢙⣈⣊⠪⠳⣅⢗⡵⡳⣝⡜⡔⠘⣿⣿⣿⣿ ⣿⣿⠐⢭⡳⡅⡬⡯⡺⡨⡈⢿⣿⣿⣿⣦⠨⡳⣝⣝⢮⡊⡜⡀⣿⣿⣿⣿ ⣿⣿⣧⠑⣝⢮⡳⣝⢽⣸⢰⠠⠙⠟⡋⡡⣸⣚⠮⢊⣓⠁⡎⡂⣸⣿⣿⣿ ⣿⣿⣿⣧⡘⡜⡮⣳⢳⢥⠱⣝⢼⢤⢌⠚⢮⣢⡲⡳⡅⡜⡌⢰⣿⣿⣿⣿ ⣿⣿⣿⠟⢃⠈⡊⢗⡽⣕⢇⡐⢌⡊⣏⢯⡢⣔⠙⢝⠜⢈⣠⣿⣿⣿⣿⣿ ⣿⡿⢁⢎⢮⢝⣆⡂⡙⢼⢕⢯⡲⣜⢵⡫⣞⢵⡹⡠⢐⠻⣿⣿⣿⣿⣿⣿ ⡿⢁⢧⣫⡳⣝⢮⡺⣢⣂⠉⠳⡹⣪⡳⣝⢮⡳⢕⣇ ⣿⣿⣿ ⠃⠘⢮⢺⢜⡮⡳⡹⢐⣈⣬⣴⣌⡊⠞⡎⣗ВИЖУ ЛИШНЕГО ⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿⣷⣌ МОДЕРА ⠄⠁⠄⠄⡑⠈⡁⢋⠪⠣⠁⠈⢻⣿⣿⣿⣿ @ruckhunter ⣿";
     private String kurwa = "PeepoEvil Как-то днём бобёр Борис PeepoFeelsBobrMan под Еленой ветку сгрыз SquirrelJamDanceAnimal\u200B Воет белочка от боли: \"Kurwa Bober! Ja pierdole!\" WidePeepoHyperSpin";
 
-    private String channelName;
+    private final String channelName;
 
-    private Map<String, SimpleWriteCommand> mapOfCommands;
+    private final Map<String, SimpleWriteCommand> mapOfCommands;
 
     /**
      * Register events of this class with the EventManager/EventHandler
      *
      * @param eventHandler SimpleEventHandler
      */
-    public ChatMessagesListener(CommandsListConfiguration commandsListConfiguration, SimpleEventHandler eventHandler, TwitchClient twitchClient, String channelName) {
+    public ChatMessagesListener(SimpleEventHandler eventHandler, TwitchClient twitchClient, String channelName) {
         eventHandler.onEvent(ChannelMessageEvent.class, event -> onChannelMessage(event, twitchClient));
-        //todo научиться из application брать конфиги мапой
-        this.commandsListConfiguration = commandsListConfiguration;
         this.channelName = channelName;
 
         this.mapOfCommands = new HashMap<>();
         mapOfCommands.put("!коломбина", new SimpleWriteCommand(kolombina, Timer.expired(Duration.ofSeconds(30))));
         mapOfCommands.put("!рак", new SimpleWriteCommand(ruckhunter, Timer.expired(Duration.ofSeconds(30))));
         mapOfCommands.put("!bobr", new SimpleWriteCommand(kurwa, Timer.expired(Duration.ofSeconds(30))));
+
+        writeCommands(mapOfCommands);
     }
 
     /**
@@ -51,6 +51,16 @@ public class ChatMessagesListener {
                 twitchClient.getChat().sendMessage(channelName, command.getCommandText());
                 command.getTimer().restart();
             }
+        }
+    }
+
+    private void writeCommands(Map<String, SimpleWriteCommand> mapOfCommands) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String mapOfCommandsString = objectMapper.writeValueAsString(mapOfCommands);
+            System.out.println(mapOfCommandsString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
