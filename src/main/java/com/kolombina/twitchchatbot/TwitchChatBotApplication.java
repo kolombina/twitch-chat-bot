@@ -5,10 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(Configuration.class)
+@EnableConfigurationProperties
 public class TwitchChatBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(TwitchChatBotApplication.class, args);
+        System.out.println("Program started");
     }
 
     //todo

@@ -1,16 +1,16 @@
-package com.kolombina.twitchchatbot;
+package com.kolombina.twitchchatbot.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "twitchaccount")
-public class Configuration {
+public class CommonConfiguration {
     private String accessToken;
     private String clientId;
     private String channelName;
 
-    public Configuration() {
+    public CommonConfiguration() {
     }
 
     public void setAccessToken(String accessToken) {
